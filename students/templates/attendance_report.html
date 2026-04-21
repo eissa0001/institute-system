@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+
+<meta charset="UTF-8">
+
+<title>تقارير الحضور</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+<a href="/report/export/" class="btn btn-success mb-3">
+تصدير Excel
+</a>
+<h3 class="mb-4">تقرير الحضور</h3>
+
+<form method="get" class="row g-3 mb-4">
+
+<div class="col-md-3">
+<label>الدورة</label>
+<select name="course" class="form-control">
+
+<option value="">كل الدورات</option>
+
+{% for course in courses %}
+
+<option value="{{ course.id }}">{{ course.name }}</option>
+
+{% endfor %}
+
+</select>
+</div>
+
+<div class="col-md-3">
+<label>اسم الطالب</label>
+<select name="student" class="form-control">
+
+<option value="">كل الطلاب</option>
+
+{% for student in students %}
+
+<option value="{{ student.id }}">{{ student.name }}</option>
+
+{% endfor %}
+
+</select>
+</div>
+
+<div class="col-md-2">
+<label>رقم الهوية</label>
+<input type="text" name="national_id" class="form-control">
+</div>
+
+<div class="col-md-2">
+<label>الجوال</label>
+<input type="text" name="phone" class="form-control">
+</div>
+
+<div class="col-md-2">
+<label>من تاريخ</label>
+<input type="date" name="date_from" class="form-control">
+</div>
+
+<div class="col-md-2">
+<label>إلى تاريخ</label>
+<input type="date" name="date_to" class="form-control">
+</div>
+
+<div class="col-md-12">
+<button class="btn btn-primary">بحث</button>
+</div>
+
+</form>
+
+<table class="table table-bordered bg-white">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>الطالب</th>
+<th>الدورة</th>
+<th>التاريخ</th>
+<th>الحالة</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for a in attendances %}
+
+<tr>
+
+<td>{{ a.student.name }}</td>
+<td>{{ a.student.course.name }}</td>
+<td>{{ a.date }}</td>
+
+<td>
+
+{% if a.status == "present" %}
+<span class="badge bg-success">حاضر</span>
+
+{% elif a.status == "absent" %}
+<span class="badge bg-danger">غائب</span>
+
+{% elif a.status == "late" %}
+<span class="badge bg-warning text-dark">متأخر</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>
