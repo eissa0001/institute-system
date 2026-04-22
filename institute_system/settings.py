@@ -56,7 +56,7 @@ ROOT_URLCONF = 'institute_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,6 +67,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'institute_system.wsgi.application'
 
@@ -114,6 +115,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = '/trainer/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
