@@ -2,7 +2,7 @@ from django.urls import path
 from .views import take_attendance, trainer_dashboard, attendance_report, dashboard
 from django.contrib.auth import views as auth_views
 from .views import export_attendance_excel
-from students.views import create_admin
+
 urlpatterns = [
 
     path('', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
@@ -15,6 +15,6 @@ urlpatterns = [
 
     path('report/', attendance_report, name='attendance_report'),
     path('report/export/', export_attendance_excel, name='export_excel'),
-    path('create-admin/', create_admin),
+    
 
 ]
