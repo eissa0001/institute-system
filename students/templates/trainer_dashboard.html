@@ -210,28 +210,35 @@ data-status="late">
 
 </div>
 
-
 <script>
 
 document.addEventListener("DOMContentLoaded", function(){
 
-document.querySelectorAll(".attendance-btn").forEach(btn => {
+    // زر الحضور
+    document.querySelectorAll(".attendance-btn").forEach(btn => {
 
-btn.addEventListener("click", function(){
+        btn.addEventListener("click", function(){
 
-const student = this.dataset.student;
-const status = this.dataset.status;
-const date = document.getElementById("attendanceDate").value;
+            const student = this.dataset.student;
+            const status = this.dataset.status;
+            const date = document.getElementById("attendanceDate").value;
 
-window.location.href =
-`/attendance/?student=${student}&status=${status}&date=${date}`;
-document.getElementById("attendanceDate").addEventListener("change", function(){
-    const selectedDate = this.value;
-    window.location.href = `/trainer/?date=${selectedDate}`;
-});
-});
+            window.location.href =
+            `/attendance/?student=${student}&status=${status}&date=${date}`;
 
-});
+        });
+
+    });
+
+    // تغيير التاريخ
+    const dateInput = document.getElementById("attendanceDate");
+
+    if(dateInput){
+        dateInput.addEventListener("change", function(){
+            const selectedDate = this.value;
+            window.location.href = `/trainer/?date=${selectedDate}`;
+        });
+    }
 
 });
 
