@@ -11,13 +11,7 @@
 
 <style>
 
-body{
-background:#f4f7fc;
-}
-
-.navbar-brand{
-font-weight:bold;
-}
+body{ background:#f4f7fc; }
 
 .header-box{
 background:linear-gradient(135deg,#0d6efd,#4e8df7);
@@ -26,29 +20,12 @@ padding:25px;
 border-radius:12px;
 }
 
-.card-stat{
-border:none;
-border-radius:12px;
-}
+.btn-present{ background:#0d6efd; color:white; }
+.btn-absent{ background:#dc3545; color:white; }
+.btn-late{ background:#ffc107; color:black; }
 
-.table{
-border-radius:10px;
-overflow:hidden;
-}
-
-.btn-present{
-background:#0d6efd;
-color:white;
-}
-
-.btn-absent{
-background:#dc3545;
-color:white;
-}
-
-.btn-late{
-background:#ffc107;
-color:black;
+.active{
+outline:3px solid black;
 }
 
 </style>
@@ -57,89 +34,30 @@ color:black;
 
 <body>
 
-<!-- Navbar -->
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-
-<div class="container">
-
-<a class="navbar-brand">نظام المعهد</a>
-
-<div>
-
-<a class="btn btn-light me-2" href="{% url 'trainer_dashboard' %}">
-لوحة المدرب
-</a>
-
-<a class="btn btn-light me-2" href="{% url 'attendance_report' %}">
-التقارير
-</a>
-<form action="/accounts/logout/" method="post" style="display:inline;">
-{% csrf_token %}
-<button type="submit" class="btn btn-danger">
-تسجيل خروج
-</button>
-</form>
-
-</div>
-
-</div>
-
-</nav>
-
-
 <div class="container mt-4">
 
-<!-- Header -->
-
 <div class="header-box mb-4">
-
-<div class="row">
-
-<div class="col-md-8">
-
 <h3>لوحة المدرب</h3>
 
-<p>تسجيل حضور الطلاب</p>
-
+<label>تاريخ الحضور</label>
+<input type="date" id="attendanceDate" class="form-control" value="{{ today }}">
 </div>
 
-<div class="col-md-4 text-end">
+<!-- ✅ الفورم -->
+<form method="POST" action="/attendance/">
+{% csrf_token %}
 
-<label class="form-label">تاريخ الحضور</label>
+<input type="hidden" name="date" id="formDate">
 
-<input
-type="date"
-id="attendanceDate"
-class="form-control"
-value="{{ today }}">
+<table class="table text-center">
 
-</div>
-
-</div>
-
-</div>
-
-
-<!-- Table -->
-
-<div class="card shadow">
-
-<div class="card-body">
-
-<table class="table table-hover text-center align-middle">
-
-<thead class="table-primary">
-
+<thead>
 <tr>
-
 <th>اسم الطالب</th>
 <th>الدورة</th>
-<th>حالة اليوم</th>
-<th>تسجيل الحضور</th>
-
+<th>الحالة</th>
+<th>اختيار</th>
 </tr>
-
 </thead>
 
 <tbody>
@@ -149,48 +67,36 @@ value="{{ today }}">
 <tr>
 
 <td>{{ student.name }}</td>
-
 <td>{{ student.course.name }}</td>
 
 <td>
-
 {% if attendance_today|get_item:student.id == "present" %}
-
-<span class="badge bg-success p-2">حاضر</span>
-
+<span class="badge bg-success">حاضر</span>
 {% elif attendance_today|get_item:student.id == "absent" %}
-
-<span class="badge bg-danger p-2">غائب</span>
-
+<span class="badge bg-danger">غائب</span>
 {% elif attendance_today|get_item:student.id == "late" %}
-
-<span class="badge bg-warning text-dark p-2">متأخر</span>
-
+<span class="badge bg-warning">متأخر</span>
 {% else %}
-
-<span class="badge bg-secondary p-2">لم يسجل</span>
-
+<span class="badge bg-secondary">لم يسجل</span>
 {% endif %}
-
 </td>
 
 <td>
 
-<button class="btn btn-sm btn-present attendance-btn"
-data-student="{{ student.id }}"
-data-status="present">
+<input type="hidden" name="status_{{ student.id }}" id="status_{{ student.id }}">
+
+<button type="button" class="btn btn-sm btn-present"
+onclick="setStatus({{ student.id }}, 'present', this)">
 حاضر
 </button>
 
-<button class="btn btn-sm btn-absent attendance-btn"
-data-student="{{ student.id }}"
-data-status="absent">
+<button type="button" class="btn btn-sm btn-absent"
+onclick="setStatus({{ student.id }}, 'absent', this)">
 غائب
 </button>
 
-<button class="btn btn-sm btn-late attendance-btn"
-data-student="{{ student.id }}"
-data-status="late">
+<button type="button" class="btn btn-sm btn-late"
+onclick="setStatus({{ student.id }}, 'late', this)">
 متأخر
 </button>
 
@@ -204,42 +110,52 @@ data-status="late">
 
 </table>
 
-</div>
+<button type="submit" class="btn btn-success w-100">
+إرسال الحضور
+</button>
 
-</div>
+</form>
 
 </div>
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function(){
+// اختيار الحالة
+function setStatus(studentId, status, btn){
 
-    // زر الحضور
-    document.querySelectorAll(".attendance-btn").forEach(btn => {
+    document.getElementById("status_" + studentId).value = status;
 
-        btn.addEventListener("click", function(){
+    const buttons = btn.parentElement.querySelectorAll("button");
+    buttons.forEach(b => b.classList.remove("active"));
 
-            const student = this.dataset.student;
-            const status = this.dataset.status;
-            const date = document.getElementById("attendanceDate").value;
+    btn.classList.add("active");
+}
 
-            window.location.href =
-            `/attendance/?student=${student}&status=${status}&date=${date}`;
+// التحقق قبل الإرسال
+document.querySelector("form").addEventListener("submit", function(e){
 
-        });
+    const inputs = document.querySelectorAll("input[id^='status_']");
+    let valid = true;
 
+    inputs.forEach(input => {
+        if(!input.value){
+            valid = false;
+        }
     });
 
-    // تغيير التاريخ
-    const dateInput = document.getElementById("attendanceDate");
-
-    if(dateInput){
-        dateInput.addEventListener("change", function(){
-            const selectedDate = this.value;
-            window.location.href = `/trainer/?date=${selectedDate}`;
-        });
+    if(!valid){
+        e.preventDefault();
+        alert("⚠️ يوجد متدرب لم يتم تحديد حالته");
+        return;
     }
 
+    document.getElementById("formDate").value =
+    document.getElementById("attendanceDate").value;
+});
+
+// تغيير التاريخ
+document.getElementById("attendanceDate").addEventListener("change", function(){
+    window.location.href = `/trainer/?date=${this.value}`;
 });
 
 </script>

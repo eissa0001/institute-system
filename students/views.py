@@ -101,105 +101,30 @@ def trainer_dashboard(request):
     })
 
 
+@login_required
 def take_attendance(request):
-    Attendance.objects.update_or_create(
-    student=student,
-    date=attendance_date,
-    defaults={'status': status}
-)
 
-    student_id = request.GET.get('student')
-    status = request.GET.get('status')
-    date_str = request.GET.get("date")
+    if request.method == "POST":
 
-    student = Student.objects.get(id=student_id)
+        date_str = request.POST.get("date")
 
+        if date_str:
+            attendance_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        else:
+            attendance_date = date.today()
 
-    if date_str:
-        attendance_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-    else:
-        attendance_date = date.today()
+        for key, value in request.POST.items():
 
-    attendance, created = Attendance.objects.get_or_create(
-        student=student,
-        date=attendance_date,
-        defaults={'status': status}
+            if key.startswith("status_"):
+                student_id = key.split("_")[1]
+                student = Student.objects.get(id=student_id)
 
-    )
+                Attendance.objects.update_or_create(
+                    student=student,
+                    date=attendance_date,
+                    defaults={'status': value}
+                )
 
-    if not created:
-        attendance.status = status
-        attendance.save()
-
-    return redirect(f'/trainer/?date={attendance_date}')
-
-
-@login_required
-def attendance_report(request):
-
-    students = Student.objects.all()
-    courses = Course.objects.all()
-    attendances = Attendance.objects.all()
-
-    course = request.GET.get("course")
-    student = request.GET.get("student")
-    national_id = request.GET.get("national_id")
-    phone = request.GET.get("phone")
-    date_from = request.GET.get("date_from")
-    date_to = request.GET.get("date_to")
-
-    if course:
-        attendances = attendances.filter(student__course_id=course)
-
-    if student:
-        attendances = attendances.filter(student_id=student)
-
-    if national_id:
-        attendances = attendances.filter(student__national_id__icontains=national_id)
-
-    if phone:
-        attendances = attendances.filter(student__phone__icontains=phone)
-
-    if date_from:
-        attendances = attendances.filter(date__gte=date_from)
-
-    if date_to:
-        attendances = attendances.filter(date__lte=date_to)
-
-    return render(request, "attendance_report.html", {
-        "attendances": attendances,
-        "students": students,
-        "courses": courses
-    })
-
-@login_required
-def dashboard(request):
-
-    trainer = Trainer.objects.get(user=request.user)
+        return redirect(f'/trainer/?date={attendance_date}')
 
     return redirect('/trainer/')
-def take_attendance(request):
-
-    student_id = request.GET.get('student')
-    status = request.GET.get('status')
-    date_str = request.GET.get("date")
-
-    if not student_id or not status:
-        return redirect('/trainer/')
-
-    student = Student.objects.get(id=student_id)
-
-    # تحديد التاريخ
-    if date_str:
-        attendance_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-    else:
-        attendance_date = today_date.today()
-
-    # تحديث أو إنشاء
-    Attendance.objects.update_or_create(
-        student=student,
-        date=attendance_date,
-        defaults={'status': status}
-    )
-
-    return redirect(f'/trainer/?date={attendance_date}')
