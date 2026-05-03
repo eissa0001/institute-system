@@ -225,7 +225,10 @@ const date = document.getElementById("attendanceDate").value;
 
 window.location.href =
 `/attendance/?student=${student}&status=${status}&date=${date}`;
-
+document.getElementById("attendanceDate").addEventListener("change", function(){
+    const selectedDate = this.value;
+    window.location.href = `/trainer/?date=${selectedDate}`;
+});
 });
 
 });

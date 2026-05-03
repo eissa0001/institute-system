@@ -97,17 +97,23 @@ def trainer_dashboard(request):
     return render(request, "trainer_dashboard.html", {
         "students": students,
         "attendance_today": attendance_today,
-        "today": today
+      "today": today.strftime("%Y-%m-%d")  
     })
 
 
 def take_attendance(request):
+    Attendance.objects.update_or_create(
+    student=student,
+    date=attendance_date,
+    defaults={'status': status}
+)
 
     student_id = request.GET.get('student')
     status = request.GET.get('status')
     date_str = request.GET.get("date")
 
     student = Student.objects.get(id=student_id)
+
 
     if date_str:
         attendance_date = datetime.strptime(date_str, "%Y-%m-%d").date()
@@ -118,6 +124,7 @@ def take_attendance(request):
         student=student,
         date=attendance_date,
         defaults={'status': status}
+
     )
 
     if not created:
@@ -171,3 +178,28 @@ def dashboard(request):
     trainer = Trainer.objects.get(user=request.user)
 
     return redirect('/trainer/')
+def take_attendance(request):
+
+    student_id = request.GET.get('student')
+    status = request.GET.get('status')
+    date_str = request.GET.get("date")
+
+    if not student_id or not status:
+        return redirect('/trainer/')
+
+    student = Student.objects.get(id=student_id)
+
+    # تحديد التاريخ
+    if date_str:
+        attendance_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    else:
+        attendance_date = today_date.today()
+
+    # تحديث أو إنشاء
+    Attendance.objects.update_or_create(
+        student=student,
+        date=attendance_date,
+        defaults={'status': status}
+    )
+
+    return redirect(f'/trainer/?date={attendance_date}')
