@@ -7,7 +7,7 @@ urlpatterns = [
 
     path('', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
 
-    path('dashboard/', dashboard, name='dashboard'),
+    path('dashboard/', trainer_dashboard, name='dashboard'),
 
     path('trainer/', trainer_dashboard, name='trainer_dashboard'),
 
