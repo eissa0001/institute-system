@@ -1,13 +1,11 @@
 from django.urls import path
-from .views import take_attendance, trainer_dashboard, attendance_report
+from .views import take_attendance, trainer_dashboard, attendance_report, export_attendance_excel
 from django.contrib.auth import views as auth_views
-from .views import export_attendance_excel
 
 urlpatterns = [
-
     path('', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
 
-    path('dashboard/', trainer_dashboard, name='dashboard'),
+    path('dashboard/', trainer_dashboard, name='dashboard'),  # ✅ هذا التعديل المهم
 
     path('trainer/', trainer_dashboard, name='trainer_dashboard'),
 
@@ -15,6 +13,4 @@ urlpatterns = [
 
     path('report/', attendance_report, name='attendance_report'),
     path('report/export/', export_attendance_excel, name='export_excel'),
-    
-
 ]
