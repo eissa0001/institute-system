@@ -33,7 +33,33 @@ outline:3px solid black;
 </head>
 
 <body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
 
+<a class="navbar-brand">نظام المعهد</a>
+
+<div>
+
+<a class="btn btn-light me-2" href="{% url 'trainer_dashboard' %}">
+لوحة المدرب
+</a>
+
+<a class="btn btn-light me-2" href="{% url 'attendance_report' %}">
+التقارير
+</a>
+
+<form action="/accounts/logout/" method="post" style="display:inline;">
+{% csrf_token %}
+<button type="submit" class="btn btn-danger">
+تسجيل خروج
+</button>
+</form>
+
+</div>
+
+</div>
+</nav>
 <div class="container mt-4">
 
 <div class="header-box mb-4">
