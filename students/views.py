@@ -8,7 +8,42 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 
 def attendance_report(request):
-    pass
+
+    attendances = Attendance.objects.select_related("student", "student__course")
+    students = Student.objects.all()
+    courses = Course.objects.all()
+
+    # الفلاتر
+    course_id = request.GET.get("course")
+    student_id = request.GET.get("student")
+    national_id = request.GET.get("national_id")
+    phone = request.GET.get("phone")
+    date_from = request.GET.get("date_from")
+    date_to = request.GET.get("date_to")
+
+    if course_id:
+        attendances = attendances.filter(student__course_id=course_id)
+
+    if student_id:
+        attendances = attendances.filter(student_id=student_id)
+
+    if national_id:
+        attendances = attendances.filter(student__national_id__icontains=national_id)
+
+    if phone:
+        attendances = attendances.filter(student__phone__icontains=phone)
+
+    if date_from:
+        attendances = attendances.filter(date__gte=date_from)
+
+    if date_to:
+        attendances = attendances.filter(date__lte=date_to)
+
+    return render(request, "attendance_report.html", {
+        "attendances": attendances,
+        "students": students,
+        "courses": courses,
+    })
 def dashboard(request):
     return redirect('/trainer/')
 
