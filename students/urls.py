@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import take_attendance, trainer_dashboard, attendance_report, dashboard
+from .views import take_attendance, trainer_dashboard, attendance_report
 from django.contrib.auth import views as auth_views
 from .views import export_attendance_excel
 

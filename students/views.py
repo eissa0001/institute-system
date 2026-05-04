@@ -9,17 +9,9 @@ from django.contrib.auth.models import User
 
 def attendance_report(request):
     pass
+def dashboard(request):
+    return redirect('/trainer/')
 
-def create_admin(request):
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser(
-            username="admin",
-            email="admin@gmail.com",
-            password="12345678"
-        )
-        return HttpResponse("Admin created")
-
-    return HttpResponse("Admin already exists")
 def export_attendance_excel(request):
 
     attendances = Attendance.objects.select_related("student", "student__course")
